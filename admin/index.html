@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#fbf5f0">
+    <title>Love note studio · A Little Piece of My Heart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Parisienne&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/admin/admin.css">
+    <script src="/admin/admin.js" defer></script>
+  </head>
+  <body>
+    <main class="auth-screen" id="auth-screen">
+      <a class="brand" href="/"><span>♥</span> a little piece of my heart</a>
+      <section class="auth-card" aria-labelledby="login-title">
+        <p class="eyebrow">YOUR PRIVATE LITTLE CORNER</p>
+        <h1 id="login-title">Welcome <em>back.</em></h1>
+        <p class="muted">Sign in to take care of your little love story.</p>
+        <form id="login-form">
+          <label>Email address<input name="email" type="email" autocomplete="username" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="button button-primary full-width" type="submit"><span>Sign in</span><span class="button-busy" aria-hidden="true"></span></button>
+        </form>
+        <p class="login-hint">Private access for the owner only. New accounts are created in Supabase, not here.</p>
+        <p class="auth-error" role="alert"></p>
+      </section>
+    </main>
+
+    <div class="dashboard" id="dashboard" hidden>
+      <aside class="sidebar">
+        <a class="brand" href="/"><span>♥</span> love note studio</a>
+        <p class="sidebar-caption">YOUR LITTLE WEBSITE</p>
+        <nav class="side-nav" aria-label="Dashboard sections">
+          <button class="nav-item is-active" data-panel="overview"><span>⌂</span> Overview</button>
+          <button class="nav-item" data-panel="settings"><span>✧</span> General settings</button>
+          <button class="nav-item" data-panel="letter"><span>♡</span> Love letter</button>
+          <button class="nav-item" data-panel="memories"><span>▧</span> Our memories</button>
+          <button class="nav-item" data-panel="reasons"><span>♥</span> Reasons I love you</button>
+          <button class="nav-item" data-panel="music"><span>♫</span> Background music</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <a class="preview-link" href="/" target="_blank" rel="noopener">↗ <span>Preview website</span></a>
+          <button class="sign-out" id="sign-out">Sign out <span aria-hidden="true">↗</span></button>
+        </div>
+      </aside>
+
+      <div class="dashboard-main">
+        <header class="topbar">
+          <div><p class="topbar-kicker">A LITTLE SPACE JUST FOR YOU</p><p class="topbar-title">Love note studio <span aria-hidden="true">♡</span></p></div>
+          <div class="topbar-actions"><a class="mobile-preview" href="/" target="_blank" rel="noopener">Preview ↗</a><button class="avatar" id="owner-avatar" aria-label="Signed-in account">♥</button></div>
+        </header>
+
+        <nav class="mobile-nav" aria-label="Dashboard sections">
+          <button class="nav-item is-active" data-panel="overview">⌂ <span>Home</span></button>
+          <button class="nav-item" data-panel="settings">✧ <span>Settings</span></button>
+          <button class="nav-item" data-panel="letter">♡ <span>Letter</span></button>
+          <button class="nav-item" data-panel="memories">▧ <span>Memories</span></button>
+          <button class="nav-item" data-panel="reasons">♥ <span>Reasons</span></button>
+          <button class="nav-item" data-panel="music">♫ <span>Music</span></button>
+        </nav>
+
+        <div class="content-area">
+          <section class="panel is-current" id="panel-overview">
+            <div class="page-heading"><div><p class="eyebrow">YOUR LOVE STORY, AT A GLANCE</p><h1>Good to see you, <em>owner.</em></h1><p class="muted">A little space to keep your favorite details close.</p></div><a class="button button-outline" href="/" target="_blank" rel="noopener">See your website ↗</a></div>
+            <div class="status-card"><div class="status-heart">♥</div><div class="status-copy"><strong>Your website is ready to be loved.</strong><span>Changes you save here are shared with visitors right away.</span></div><span class="live-pill"><i></i> LIVE</span></div>
+            <div class="stat-grid">
+              <article class="stat-card"><span class="stat-icon">▧</span><span class="stat-label">LITTLE MEMORIES</span><strong id="memory-count">—</strong><span>moments in your story</span></article>
+              <article class="stat-card"><span class="stat-icon">♥</span><span class="stat-label">REASONS TO LOVE</span><strong id="reason-count">—</strong><span>little things worth saying</span></article>
+              <article class="stat-card"><span class="stat-icon">✧</span><span class="stat-label">LAST UPDATED</span><strong class="updated-value" id="last-updated">—</strong><span>your latest saved changes</span></article>
+            </div>
+            <div class="welcome-card"><div><p class="eyebrow">A GENTLE REMINDER</p><h2>Make it <em>yours.</em></h2><p>Every date, photograph, and little note can be changed whenever your story grows.</p><button class="text-button" data-go="settings">Personalize your website <span>→</span></button></div><span class="welcome-ornament" aria-hidden="true">❀</span></div>
+          </section>
+
+          <section class="panel" id="panel-settings">
+            <div class="page-heading"><div><p class="eyebrow">MAKE THIS LITTLE CORNER YOURS</p><h1>General <em>settings.</em></h1><p class="muted">The little details that make it feel like you.</p></div></div>
+            <form class="editor-card" id="settings-form">
+              <div class="form-grid">
+                <label>Her name<input name="girlfriendName" required placeholder="e.g. Beautiful"></label>
+                <label>Your name<input name="yourName" required placeholder="Your name"></label>
+                <label class="span-two">Website title<input name="websiteTitle" required placeholder="a little piece of my heart"></label>
+                <label class="span-two">Introductory subtitle<input name="introSubtitle" required placeholder="I have something special for you..."></label>
+                <label class="span-two">Final closing message<input name="closingMessage" required placeholder="If I had to choose again, I'd still choose you."></label>
+                <label class="span-two">Special date <span class="optional">(optional)</span><input name="personalDate" placeholder="A date or a little note"></label>
+              </div>
+              <div class="form-footer"><span>These changes appear on the public website after saving.</span><button class="button button-primary" type="submit">Save settings</button></div>
+            </form>
+          </section>
+
+          <section class="panel" id="panel-letter">
+            <div class="page-heading"><div><p class="eyebrow">SOME WORDS FROM YOUR HEART</p><h1>Your love <em>letter.</em></h1><p class="muted">Write in English, Bahasa Indonesia, or both. Separate paragraphs with a blank line.</p></div></div>
+            <form class="editor-card" id="letter-form">
+              <label>Letter to her<textarea name="letter" rows="12" required placeholder="Write what you want her to know..."></textarea></label>
+              <div class="letter-preview"><span class="preview-label">A LITTLE PREVIEW</span><p id="letter-preview"></p></div>
+              <div class="form-footer"><span>Your letter appears as a gentle typewriter reveal.</span><button class="button button-primary" type="submit">Save letter</button></div>
+            </form>
+          </section>
+
+          <section class="panel" id="panel-memories">
+            <div class="page-heading"><div><p class="eyebrow">MOMENTS WORTH KEEPING</p><h1>Our little <em>story.</em></h1><p class="muted">Add photos from your phone and arrange them in the order you love.</p></div><button class="button button-primary" id="add-memory" type="button">＋ Add a memory</button></div>
+            <div class="memory-editor-list" id="memory-editor-list"></div>
+            <div class="sticky-save"><span>Remember to save your edits.</span><button class="button button-primary" id="save-memories" type="button">Save memories</button></div>
+          </section>
+
+          <section class="panel" id="panel-reasons">
+            <div class="page-heading"><div><p class="eyebrow">THERE ARE SO MANY REASONS</p><h1>Why I love <em>you.</em></h1><p class="muted">Each reason becomes a little card visitors can turn over.</p></div><button class="button button-primary" id="add-reason" type="button">＋ Add a reason</button></div>
+            <div class="reason-editor-list" id="reason-editor-list"></div>
+            <div class="sticky-save"><span>Use the arrows to change the order.</span><button class="button button-primary" id="save-reasons" type="button">Save reasons</button></div>
+          </section>
+
+          <section class="panel" id="panel-music">
+            <div class="page-heading"><div><p class="eyebrow">A SONG FOR THE TWO OF YOU</p><h1>Background <em>music.</em></h1><p class="muted">Choose a song you have permission to share. Playback starts after a visitor taps.</p></div></div>
+            <div class="editor-card music-card">
+              <div class="music-art">♫</div><div class="music-copy"><span class="preview-label">CURRENT SONG</span><strong id="music-name">No song selected yet</strong><span>MP3, M4A, AAC, OGG, WAV, or WebM · max 50 MB</span></div>
+              <audio id="music-preview" controls preload="none"></audio>
+              <label class="upload-zone"><span class="upload-icon">↑</span><strong>Choose an audio file</strong><span>Browse your phone or computer</span><input type="file" id="music-file" accept="audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.aac,.ogg,.wav,.webm"></label>
+              <div class="form-footer"><button class="button button-danger" id="remove-music" type="button">Remove song</button><button class="button button-primary" id="save-music" type="button">Save music</button></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
