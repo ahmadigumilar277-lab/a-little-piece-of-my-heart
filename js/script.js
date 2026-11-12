@@ -25,7 +25,9 @@ let giftContent = {
     { title: "There is no end", message: "Daftar ini tidak akan pernah cukup panjang untuk semua alasan yang ada." }
   ],
   musicSrc: "",
-  musicPath: ""
+  musicPath: "",
+  videoUrl: "",
+  videoPath: ""
 };
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +38,7 @@ const audio = document.querySelector(".background-audio");
 const musicToggle = document.querySelector(".music-toggle");
 const audioStatus = document.querySelector(".audio-status");
 let letterStarted = false;
+let letterOpened = false;
 let audioConfigured = false;
 let statusTimer;
 
@@ -213,6 +216,45 @@ function configureAudio() {
   return true;
 }
 
+function renderVideoMessage() {
+  const container = document.querySelector("#video-message");
+  const video = document.querySelector("#public-video");
+  const status = document.querySelector("#video-status");
+  const videoUrl = giftContent.videoUrl || "";
+  if (!letterOpened || !videoUrl) {
+    container.hidden = true;
+    status.hidden = true;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    return;
+  }
+  container.hidden = false;
+  if (video.src !== videoUrl) {
+    video.src = videoUrl;
+    video.load();
+  }
+  status.hidden = true;
+  return video;
+}
+
+function playVideoMessage() {
+  const video = renderVideoMessage();
+  if (!video) return;
+  video.play().catch(() => {
+    video.muted = true;
+    video.play().then(() => {
+      const status = document.querySelector("#video-status");
+      status.textContent = "The video is playing without sound. Use the player controls to turn sound on.";
+      status.hidden = false;
+    }).catch(() => {
+      const status = document.querySelector("#video-status");
+      status.textContent = "This video isn't available right now. Please try again later.";
+      status.hidden = false;
+    });
+  });
+}
+
 async function loadPublishedContent() {
   if (window.location.protocol === "file:") return;
   try {
@@ -235,7 +277,8 @@ async function loadPublishedContent() {
     giftContent = {
       ...giftContent,
       ...data.content,
-      musicSrc: data.content.musicUrl || data.content.musicSrc || ""
+      musicSrc: data.content.musicUrl || data.content.musicSrc || "",
+      videoUrl: data.content.videoUrl || ""
     };
     letterStarted = false;
     document.querySelector(".letter-copy").replaceChildren();
@@ -250,6 +293,7 @@ async function loadPublishedContent() {
       audio.src = giftContent.musicSrc;
       audioConfigured = true;
     }
+    renderVideoMessage();
   } catch (error) {
     console.warn("Could not load published content; showing the built-in version.", error);
   }
@@ -274,10 +318,19 @@ async function playAudio() {
 }
 
 openButton.addEventListener("click", () => {
+  letterOpened = true;
   hero.classList.add("is-opening");
   typeLetter();
   if (giftContent.musicSrc) playAudio();
-  window.setTimeout(() => document.querySelector("#letter").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" }), reducedMotion ? 0 : 360);
+  playVideoMessage();
+  window.setTimeout(() => {
+    document.querySelector("#letter").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+  }, reducedMotion ? 0 : 360);
+});
+
+document.querySelector("#public-video").addEventListener("error", () => {
+  if (!giftContent.videoUrl || !letterOpened) return;
+  document.querySelector("#video-status").hidden = false;
 });
 
 musicToggle.addEventListener("click", () => {

@@ -12,8 +12,11 @@ let updatedAt = "";
 let toastTimer;
 let stagedMusic = null;
 let removeMusicOnSave = false;
+let stagedVideo = null;
+let removeVideoOnSave = false;
 const allowedAudio = new Set(["audio/mpeg", "audio/mp4", "audio/aac", "audio/ogg", "audio/wav", "audio/webm"]);
 const allowedImages = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
+const allowedVideos = new Map([["mp4", "video/mp4"], ["webm", "video/webm"]]);
 const maxUploadSize = 50 * 1024 * 1024;
 
 const defaultContent = {
@@ -31,7 +34,9 @@ const defaultContent = {
   memories: [],
   reasons: [],
   musicUrl: "",
-  musicPath: ""
+  musicPath: "",
+  videoUrl: "",
+  videoPath: ""
 };
 
 function notify(message, isError = false) {
@@ -96,6 +101,8 @@ async function openDashboard(user, fromLogin = false) {
     const row = await fetchOwnerContent(user);
     content = normalizeContent(row.content);
     persistedContent = normalizeContent(row.content);
+    stagedVideo = null;
+    removeVideoOnSave = false;
     memoryDrafts = structuredClone(content.memories);
     reasonDrafts = structuredClone(content.reasons);
     updatedAt = row.updated_at;
@@ -131,6 +138,7 @@ function renderAll() {
   renderMemories();
   renderReasons();
   renderMusic();
+  renderVideo();
 }
 
 function showPanel(name) {
@@ -248,12 +256,12 @@ function addMemory() {
   document.querySelector("#memory-editor-list .memory-editor:last-child [data-field=title]").focus();
 }
 
-async function uploadFile(file, folder) {
+async function uploadFile(file, folder, contentType = file.type) {
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-90);
   const path = `${folder}/${crypto.randomUUID()}-${safeName}`;
   const { error } = await supabase.storage.from("site-media").upload(path, file, {
     cacheControl: "31536000",
-    contentType: file.type,
+    contentType,
     upsert: false
   });
   if (error) throw error;
@@ -388,6 +396,67 @@ async function saveMusic(button) {
   } catch (error) {
     if (uploaded) await removeStoredFiles([uploaded.path]);
     notify(`Couldn't save the song: ${getErrorMessage(error)}`, true);
+  } finally {
+    setBusy(button, false);
+  }
+}
+
+function getVideoContentType(file) {
+  const extension = file.name.split(".").pop().toLowerCase();
+  const contentType = allowedVideos.get(extension);
+  return contentType && (!file.type || file.type === contentType) ? contentType : "";
+}
+
+function renderVideo() {
+  const video = document.querySelector("#video-preview");
+  const name = document.querySelector("#video-name");
+  if (video.previewObjectUrl) {
+    URL.revokeObjectURL(video.previewObjectUrl);
+    video.previewObjectUrl = "";
+  }
+  if (stagedVideo) {
+    video.hidden = false;
+    video.previewObjectUrl = URL.createObjectURL(stagedVideo);
+    video.src = video.previewObjectUrl;
+    name.textContent = stagedVideo.name;
+  } else if (removeVideoOnSave || !content.videoUrl) {
+    video.hidden = true;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    name.textContent = "No video selected yet";
+  } else {
+    video.hidden = false;
+    video.src = content.videoUrl;
+    name.textContent = content.videoPath?.split("/").pop() || "Your video message";
+  }
+}
+
+async function saveVideo(button) {
+  setBusy(button, true);
+  const oldPath = persistedContent.videoPath;
+  let uploaded;
+  try {
+    if (stagedVideo) {
+      uploaded = await uploadFile(stagedVideo, "video-messages", getVideoContentType(stagedVideo));
+    }
+    const nextContent = {
+      ...content,
+      videoUrl: removeVideoOnSave ? "" : uploaded?.url || content.videoUrl,
+      videoPath: removeVideoOnSave ? "" : uploaded?.path || content.videoPath
+    };
+    if (!await saveContent(nextContent, button)) {
+      if (uploaded) await removeStoredFiles([uploaded.path]);
+      return;
+    }
+    if (uploaded || removeVideoOnSave) await removeStoredFiles([oldPath]);
+    stagedVideo = null;
+    removeVideoOnSave = false;
+    renderVideo();
+    notify(nextContent.videoUrl ? "Video message updated." : "Video message removed.");
+  } catch (error) {
+    if (uploaded) await removeStoredFiles([uploaded.path]);
+    notify(`Couldn't save the video: ${getErrorMessage(error)}`, true);
   } finally {
     setBusy(button, false);
   }
@@ -540,6 +609,29 @@ document.querySelector("#remove-music").addEventListener("click", () => {
   document.querySelector("#music-file").value = "";
   renderMusic();
   notify("Ready to remove. Save music to publish the change.");
+});
+
+document.querySelector("#video-file").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!getVideoContentType(file) || file.size === 0 || file.size > maxUploadSize) {
+    event.target.value = "";
+    notify("Choose an MP4 or WebM video up to 50 MB.", true);
+    return;
+  }
+  stagedVideo = file;
+  removeVideoOnSave = false;
+  renderVideo();
+});
+document.querySelector("#save-video").addEventListener("click", (event) => saveVideo(event.currentTarget));
+document.querySelector("#remove-video").addEventListener("click", () => {
+  if (!content.videoUrl && !stagedVideo) return notify("There isn't a saved video to remove.");
+  if (!window.confirm("Remove the video message from your website? This takes effect when you save.")) return;
+  stagedVideo = null;
+  removeVideoOnSave = Boolean(content.videoUrl);
+  document.querySelector("#video-file").value = "";
+  renderVideo();
+  notify("Ready to remove. Save video to publish the change.");
 });
 
 async function initialize() {

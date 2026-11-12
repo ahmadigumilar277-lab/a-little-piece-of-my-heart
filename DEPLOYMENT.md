@@ -8,11 +8,11 @@ This project deploys as a static site with one Vercel serverless configuration e
 - [ ] Create the sole owner account under **Authentication → Users**; public signups stay disabled.
 - [ ] Copy its Auth UUID.
 - [ ] Replace **all** `OWNER_USER_UUID` placeholders in `supabase/setup.sql` and run the script in Supabase SQL Editor.
-- [ ] Confirm the `site_content` table has the seeded `main` record and `site-media` bucket exists.
+- [ ] Confirm the `site_content` table has the seeded `main` record and `site-media` bucket exists. Rerun the updated setup script when adding video support to an existing project; the seed will not overwrite saved content.
 - [ ] Copy the Project URL and anon/publishable key from **Project Settings → API**.
 - [ ] Never use the `service_role` key in this app.
 
-The setup SQL sets RLS, public read access for published content, owner-only write access, and public-read/owner-write access for site media. Public URLs are necessary for the unauthenticated romantic website to display uploaded content.
+The setup SQL sets RLS, public read access for published content, owner-only write access, and public-read/owner-write access for site media. Public URLs are necessary for the unauthenticated romantic website to display uploaded content. The dashboard accepts MP4/WebM video messages up to 50 MB, stores the file in `site-media`, and saves its URL/path in the published content row.
 
 ## Vercel + GitHub
 

@@ -20,7 +20,7 @@ A romantic, responsive website with a private mobile-friendly content dashboard.
 5. In **Authentication → Providers / Sign in**, leave email/password sign-in enabled and disable public signups (the setting may appear as **Allow new users to sign up**). The dashboard intentionally has login only and no registration flow.
 6. In **Project Settings → API**, copy the Project URL and the `anon`/publishable key. Never copy or configure the `service_role` key for this website.
 
-The SQL script seeds editable example content and makes the `site-media` bucket public-read so published memories and music can play without a visitor login. Only the exact owner UUID can write site content or upload, replace, and remove bucket files. Do not use this public bucket for private or sensitive files.
+The SQL script seeds editable example content and makes the `site-media` bucket public-read so published memories, music, and the video message can play without a visitor login. Only the exact owner UUID can write site content or upload, replace, and remove bucket files. Do not use this public bucket for private or sensitive files.
 
 ## Deploy to Vercel
 
@@ -38,7 +38,7 @@ For local development with Vercel CLI, copy `.env.example` to `.env.local`, fill
 
 ## Use the dashboard
 
-Sign in at `/admin` with the owner email and password created in Supabase Auth. Edit settings and the letter, add and reorder memories/reasons, upload images or music, preview the public site, and save. Saved content is fetched by public visitors on their next page load. Uploads are limited to 50 MB and accepted image/audio types are checked in the dashboard and by the bucket.
+Sign in at `/admin` with the owner email and password created in Supabase Auth. Edit settings and the letter, add and reorder memories/reasons, upload images, music, or an MP4/WebM video message, preview the public site, and save. Video messages appear after a visitor opens the letter. Saved content is fetched by public visitors on their next page load. Uploads are limited to 50 MB and accepted image/audio/video types are checked in the dashboard and by the bucket. After updating an existing project, rerun the updated `supabase/setup.sql` so the existing bucket allows the video MIME types; its seed uses `on conflict do nothing` and will not replace saved content.
 
 ## Customize without the CMS
 

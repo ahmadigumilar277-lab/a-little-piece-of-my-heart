@@ -73,7 +73,9 @@ values (
       {"title":"There is no end","message":"Daftar ini tidak akan pernah cukup panjang untuk semua alasan yang ada."}
     ],
     "musicUrl": "",
-    "musicPath": ""
+    "musicPath": "",
+    "videoUrl": "",
+    "videoPath": ""
   }'::jsonb
 )
 on conflict (id) do nothing;
@@ -84,7 +86,8 @@ on conflict (id) do nothing;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('site-media', 'site-media', true, 52428800, array[
   'image/jpeg', 'image/png', 'image/webp', 'image/avif',
-  'audio/mpeg', 'audio/mp4', 'audio/aac', 'audio/ogg', 'audio/wav', 'audio/webm'
+  'audio/mpeg', 'audio/mp4', 'audio/aac', 'audio/ogg', 'audio/wav', 'audio/webm',
+  'video/mp4', 'video/webm'
 ])
 on conflict (id) do update set
   public = excluded.public,
